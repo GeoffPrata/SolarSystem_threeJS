@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html>
+	<head>		
+		<title>Project_4_Geoff_Prata.js app</title>
+		<style>
+			body { margin: 0; }
+			canvas { display: block; }
+		</style>
+	
+	<body>
+		<script src="js/three.js"></script>
+		<script src="js/OrbitControls.js"></script>		
+		<script src="js/dat.gui.min.js"></script>
+		
+		
+		<script>			
+			
+			function init() {			
+			
+			//create new scene object
+			 scene = new THREE.Scene();			
+			
+			//create new camera object
+			camera = new THREE.PerspectiveCamera( 45, window.innerWidth/window.innerHeight, 0.1, 15000 );
+			
+			
+			camera.position.z = 10;
+			
+			//update scene as needed if window is resized
+			camera.updateProjectionMatrix();
+			
+			//enable antialias for smoother looking objects
+			renderer = new THREE.WebGLRenderer({antialias: true});
+			
+			//set size of renderer to the window with and height -- note this automatically makes the resolution greater than 640X480	
+			renderer.setSize( window.innerWidth, window.innerHeight );
+			
+			
+			document.body.appendChild( renderer.domElement );			
+			
+			//creation of the OrbitControl object and setting distance of camera for scrolling in and out
+			//the program does scroll in and out, but it requires re-clicking the screen again to show the changes.
+			controls = new THREE.OrbitControls(camera);			
+			controls.minDistance = 10;
+			controls.maxDistance = 200;			
+			
+			//function to call for the gui object
+			rotationControl = new function(){
+				this.planetRotation = 0.00001;
+				this.planetRevolve = 0.00001;
+			}						
+			
+			//This is the creation of the GUI object and adding the slider numerical ranges
+			gui = new dat.GUI();			
+			gui.add(rotationControl, 'planetRotation', 0.0, 0.1);
+			gui.add(rotationControl, 'planetRevolve', 0.0, 0.01);	
+
+			
+			//add directional light in the positive direction		
+			light1 = new THREE.DirectionalLight(0xffffff, 1.0);							
+			//position of light
+			light1.position.set(20,0,20);			
+			//add light to the scene
+			scene.add(light1);
+
+			//add directional light	in the negative direction to allow full light to hit planets from the sun		
+			light2 = new THREE.DirectionalLight(0xffffff, 1.0);							
+			//position of light
+			light2.position.set(-20,0,-20);			
+			//add light to the scene
+			scene.add(light2);
+			
+			
+			//Sun
+			var geometry = new THREE.SphereGeometry(1.5, 15, 15);			
+			var textureLoader = new THREE.TextureLoader();
+			textureLoader.crossOrigin = "Anonymous";			
+			var texture = textureLoader.load('https://raw.githubusercontent.com/gprata/planets/master/2k_sun.jpg');				
+			var material = new THREE.MeshBasicMaterial({map: texture,});							
+			sun = new THREE.Mesh ( geometry, material );
+			sun.position.set(0,0,0);
+			scene.add(sun);				
+			
+			
+			//All planets & moons below get attached to the sun object as a child node to the scene. This allows them to rotate around the sun easily
+			//Mercury
+			var geometry = new THREE.SphereGeometry(0.3, 15, 15);			
+			var textureLoader = new THREE.TextureLoader();
+			textureLoader.crossOrigin = "Anonymous";			
+			var texture = textureLoader.load('https://raw.githubusercontent.com/gprata/planets/master/2k_mercury.jpg');						
+			var material = new THREE.MeshLambertMaterial({map: texture,});							
+			mercury = new THREE.Mesh ( geometry, material );
+			mercury.position.set(-3,0,-5);
+			sun.add(mercury);			
+			
+			//Venus
+			var geometry = new THREE.SphereGeometry(0.3, 15, 15);			
+			var textureLoader = new THREE.TextureLoader();
+			textureLoader.crossOrigin = "Anonymous";			
+			var texture = textureLoader.load('https://raw.githubusercontent.com/gprata/planets/master/2k_venus_surface.jpg');						
+			var material = new THREE.MeshLambertMaterial({map: texture,});							
+			venus = new THREE.Mesh ( geometry, material );
+			venus.position.set(3,0,5);
+			sun.add(venus);			
+			
+			
+			//Earth
+			var geometry = new THREE.SphereGeometry(0.3, 15, 15);			
+			var textureLoader = new THREE.TextureLoader();
+			textureLoader.crossOrigin = "Anonymous";			
+			var texture = textureLoader.load('https://raw.githubusercontent.com/gprata/planets/master/2k_earth_daymap.jpg');						
+			var material = new THREE.MeshLambertMaterial({map: texture,});							
+			earth = new THREE.Mesh ( geometry, material );
+			earth.position.set(6,0,5);
+			sun.add(earth);
+			
+			
+			//Moon
+			var geometry = new THREE.SphereGeometry(0.1, 15, 15);			
+			var textureLoader = new THREE.TextureLoader();
+			textureLoader.crossOrigin = "Anonymous";			
+			var texture = textureLoader.load('https://raw.githubusercontent.com/gprata/planets/master/moonmap2k.jpg');						
+			var material = new THREE.MeshLambertMaterial({map: texture,});							
+			moon = new THREE.Mesh ( geometry, material );
+			moon.position.set(1,0,0);
+			earth.add(moon);
+			
+			
+			//Mars
+			var geometry = new THREE.SphereGeometry(0.3, 15, 15);			
+			var textureLoader = new THREE.TextureLoader();
+			textureLoader.crossOrigin = "Anonymous";			
+			var texture = textureLoader.load('https://raw.githubusercontent.com/gprata/planets/master/2k_mars.jpg');						
+			var material = new THREE.MeshLambertMaterial({map: texture,});							
+			mars = new THREE.Mesh ( geometry, material );
+			mars.position.set(9,0,-5);
+			sun.add(mars);
+			
+			//Jupiter
+			var geometry = new THREE.SphereGeometry(0.5, 15, 15);			
+			var textureLoader = new THREE.TextureLoader();
+			textureLoader.crossOrigin = "Anonymous";			
+			var texture = textureLoader.load('https://raw.githubusercontent.com/gprata/planets/master/2k_jupiter.jpg');						
+			var material = new THREE.MeshLambertMaterial({map: texture,});							
+			jupiter = new THREE.Mesh ( geometry, material );
+			jupiter.position.set(11,0,-6);
+			sun.add(jupiter);
+			
+			//Saturn
+			var geometry = new THREE.SphereGeometry(0.5, 15, 15);			
+			var textureLoader = new THREE.TextureLoader();
+			textureLoader.crossOrigin = "Anonymous";			
+			var texture = textureLoader.load('https://raw.githubusercontent.com/gprata/planets/master/2k_saturn.jpg');						
+			var material = new THREE.MeshLambertMaterial({map: texture,});							
+			saturn = new THREE.Mesh ( geometry, material );
+			saturn.position.set(13,0,-8);
+			sun.add(saturn);			
+			
+			
+			//Saturn's Ring
+			var geometry2 = new THREE.TorusGeometry( 0.75, 0.05, 100, 50 );		
+			var textureLoader = new THREE.TextureLoader();
+			textureLoader.crossOrigin = "Anonymous";			
+			var texture = textureLoader.load('https://raw.githubusercontent.com/gprata/planets/master/2k_saturn_ring_alpha.png');						
+			var material = new THREE.MeshLambertMaterial({map: texture,});							
+			saturnsRing = new THREE.Mesh ( geometry2, material );
+			saturnsRing.position.set(13,0,-8);
+			saturnsRing.rotation.x = 5.0;
+			sun.add(saturnsRing);	
+
+
+			//Uranus
+			var geometry = new THREE.SphereGeometry(0.5, 15, 15);			
+			var textureLoader = new THREE.TextureLoader();
+			textureLoader.crossOrigin = "Anonymous";			
+			var texture = textureLoader.load('https://raw.githubusercontent.com/gprata/planets/master/2k_uranus.jpg');			
+			var material = new THREE.MeshLambertMaterial({map: texture,});							
+			uranus = new THREE.Mesh ( geometry, material );
+			uranus.position.set(-6,0,-10);
+			sun.add(uranus);
+			
+			//Neptune
+			var geometry = new THREE.SphereGeometry(0.4, 15, 15);			
+			var textureLoader = new THREE.TextureLoader();
+			textureLoader.crossOrigin = "Anonymous";			
+			var texture = textureLoader.load('https://raw.githubusercontent.com/gprata/planets/master/2k_neptune.jpg');			
+			var material = new THREE.MeshLambertMaterial({map: texture,});							
+			neptune = new THREE.Mesh ( geometry, material );
+			neptune.position.set(2,0,-12);
+			sun.add(neptune);
+			
+			//Pluto
+			var geometry = new THREE.SphereGeometry(0.2, 15, 15);			
+			var textureLoader = new THREE.TextureLoader();
+			textureLoader.crossOrigin = "Anonymous";			
+			var texture = textureLoader.load('https://raw.githubusercontent.com/gprata/planets/master/plutomap2k.jpg');			
+			var material = new THREE.MeshLambertMaterial({map: texture,});							
+			pluto = new THREE.Mesh ( geometry, material );
+			pluto.position.set(15,0,-13);
+			sun.add(pluto);
+			
+			
+			
+			//SkyBox creation			
+			var geometry1 = new THREE.CubeGeometry( 10000, 10000, 10000);
+			var cubeMaterials =	[
+			//Right
+			new THREE.MeshBasicMaterial( { map: new THREE.TextureLoader().load('https://raw.githubusercontent.com/gprata/skybox/master/WeltraumR.png'), side: THREE.DoubleSide }),
+			//Left
+			new THREE.MeshBasicMaterial( { map: new THREE.TextureLoader().load('https://raw.githubusercontent.com/gprata/skybox/master/WeltraumL.png'), side: THREE.DoubleSide }),			
+			//Top
+			new THREE.MeshBasicMaterial( { map: new THREE.TextureLoader().load('https://raw.githubusercontent.com/gprata/skybox/master/WeltraumO.png'), side: THREE.DoubleSide }),
+			//Bottom
+			new THREE.MeshBasicMaterial( { map: new THREE.TextureLoader().load('https://raw.githubusercontent.com/gprata/skybox/master/WeltraumU.png'), side: THREE.DoubleSide }),
+			//Font
+			new THREE.MeshBasicMaterial( { map: new THREE.TextureLoader().load('https://raw.githubusercontent.com/gprata/skybox/master/Weltraum.png'), side: THREE.DoubleSide }),
+			//Back
+			new THREE.MeshBasicMaterial( { map: new THREE.TextureLoader().load('https://raw.githubusercontent.com/gprata/skybox/master/WeltraumH.png'), side: THREE.DoubleSide })
+			];
+			
+			var cubeMaterial = new THREE.MeshFaceMaterial( cubeMaterials );
+			cube = new THREE.Mesh( geometry1, cubeMaterial );
+			scene.add( cube );				
+				
+			}			
+			
+			
+			//These are the objects that are animating in a loop
+			function render() {				
+				requestAnimationFrame( render );			
+				
+				//allows the planets to rotate variably using the rotationControl.planetRotation variable
+				mercury.rotation.y += rotationControl.planetRotation;				
+				venus.rotation.y += rotationControl.planetRotation;
+				earth.rotation.y += rotationControl.planetRotation;
+				moon.rotation.y += rotationControl.planetRotation;
+				mars.rotation.y += rotationControl.planetRotation;
+				jupiter.rotation.y += rotationControl.planetRotation;
+				saturn.rotation.y += rotationControl.planetRotation;
+				saturnsRing.rotation.z += rotationControl.planetRotation;	
+				uranus.rotation.y += rotationControl.planetRotation;
+				neptune.rotation.y += rotationControl.planetRotation;
+				pluto.rotation.y += rotationControl.planetRotation;				
+				
+				//allows the planets to revolve variably using the rotationControl.planetRotation variable
+				sun.rotation.y += rotationControl.planetRevolve;
+				
+				//Redner
+				renderer.render( scene, camera );
+								
+			}	
+			
+			//Call the init function
+			init();
+			
+			//Call the render function
+			render();
+			
+		</script>
+	</head>
+</body>
+</html>
